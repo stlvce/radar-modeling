@@ -1,32 +1,33 @@
 import socket
-import time
 import pickle
+import time
 import os
 
 from settings.server import rSrv, ans
 
 if not hasattr(rSrv, 'u') or rSrv.u is None or rSrv.u.getsockname()[1] != rSrv.serverPort:
-    print(f'mServer by Sam running with LocalPort={rSrv.serverPort}')
+    print(f'Python UDP server running with port={rSrv.serverPort}')
     rSrv.tStart = time.time()
     rSrv.tcpipinfo = socket.getaddrinfo("localhost", 64588, socket.AF_UNSPEC, socket.SOCK_DGRAM)
     for ii, (family, socktype, proto, canonname, sockaddr) in enumerate(rSrv.tcpipinfo):
         print(f'{ii} - {sockaddr[0]}')
 
     # Создание сокета сервера
-    rSrv.u = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    rSrv.u = socket.socket()
     rSrv.u.bind((rSrv.serverIp, rSrv.serverPort))
-    # Подключение к SamRLSim
-    rSrv.u.connect((rSrv.toIP, rSrv.toPort))
+    rSrv.u.listen(1)
+    # Принятие клиентского подключения SamRLSim
+    conn, addr = rSrv.u.accept()
+    print("\nПодключение:", addr)
     # Отправка сообщения удаленному хосту
-    rSrv.u.sendto(f'Hello from python mServer {ans}'.encode(), (rSrv.toIP, rSrv.toPort))
-
+    conn.sendto(f'Hello from python mServer {ans}'.encode(), (rSrv.toIP, rSrv.toPort))
     with open(os.path.join(os.getcwd(), "py_server/rSrvTemp.pkl"), 'wb') as f:
         pickle.dump(rSrv, f)
 
     while rSrv.cmd != 'exit':
-        data, addr = rSrv.u.recvfrom(1024)
+        data = conn.recv(1024)
         rSrv.cmd = data.decode()
-        print(f'Получено: {rSrv.cmd}')
+        print(f'Сообщение от клиента: {rSrv.cmd}\n')
 
         if not rSrv.cmd or rSrv.cmd.startswith('%') or not isinstance(rSrv.cmd, str):
             continue
@@ -61,9 +62,9 @@ if not hasattr(rSrv, 'u') or rSrv.u is None or rSrv.u.getsockname()[1] != rSrv.s
                     rSrv = pickle.load(f)
             rSrv.lastErr = f'{str(e)} In_file: {e.__traceback__.tb_frame.f_code.co_filename}, line {e.__traceback__.tb_lineno}'
             print(rSrv.lastErr)
-            rSrv.u.sendto(rSrv.lastErr.encode(), addr)
+            conn.sendto(rSrv.lastErr.encode(), addr)
 
-    rSrv.u.sendto(f'Bye from mServer. Time_used={time.time() - rSrv.tStart} s'.encode(), addr)
-    print(f'ValuesSent={rSrv.u.sendto.count}; ValuesReceived={rSrv.u.recvfrom.count}; BytesAvailable={rSrv.u.recvfrom.count}')
-    rSrv.u.close()
-    print(f'Всего использовано время ЦПУ={time.time() - rSrv.tStart} с')
+    conn.sendto(f'Bye from mServer. Time_used={time.time() - rSrv.tStart} s'.encode(), addr)
+    # print(f'ValuesSent={rSrv.u.sendto.count}; ValuesReceived={rSrv.u.recvfrom.count}; BytesAvailable={rSrv.u.recvfrom.count}')
+    conn.close()
+    # print(f'Всего использовано время ЦПУ={time.time() - rSrv.tStart} с')

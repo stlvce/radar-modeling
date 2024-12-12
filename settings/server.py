@@ -1,14 +1,16 @@
+from socket import socket
+
 ans = 'v.2.2'
 
 class rSrv:
-    # serverPort = 60317
     serverIp = ""
+    # serverPort = 61444
     serverPort = 9098
     toPort = 9092
-    toIP = 'localhost'
+    toIP = "localhost"
     tcpipinfo = None
     u_list = []
-    u = None
+    u: socket | None = None
     tStart = 0
     cmd = ''
     ki = 0
