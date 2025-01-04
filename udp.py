@@ -13,19 +13,17 @@ if not hasattr(rSrv, 'u') or rSrv.u is None or rSrv.u.getsockname()[1] != rSrv.s
         print(f'{ii} - {sockaddr[0]}')
 
     # Создание сокета сервера
-    rSrv.u = socket.socket()
+    rSrv.u = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     rSrv.u.bind((rSrv.serverIp, rSrv.serverPort))
-    rSrv.u.listen(1)
     # Принятие клиентского подключения SamRLSim
-    conn, addr = rSrv.u.accept()
-    print("\nПодключение:", addr)
+    # conn, addr = rSrv.u.accept()
+    rSrv.u.connect((rSrv.toIP, rSrv.toPort))
+    print("\nПодключение:", (rSrv.toIP, rSrv.toPort))
     # Отправка сообщения удаленному хосту
-    conn.sendto(f'Hello from python mServer {ans}'.encode(), (rSrv.toIP, rSrv.toPort))
-    with open(os.path.join(os.getcwd(), "py_server/rSrvTemp.pkl"), 'wb') as f:
-        pickle.dump(rSrv, f)
-
+    rSrv.u.sendto(f'Hello from python mServer {ans}'.encode(), (rSrv.toIP, rSrv.toPort))
+    
     while rSrv.cmd != 'exit':
-        data = conn.recv(1024)
+        data = rSrv.u.recvfrom(4096)
         rSrv.cmd = data.decode()
         print(f'Сообщение от клиента: {rSrv.cmd}\n')
 
@@ -41,10 +39,6 @@ if not hasattr(rSrv, 'u') or rSrv.u is None or rSrv.u.getsockname()[1] != rSrv.s
                 rSrv.u.sendto(f'Ok. edit={rSrv.cmd[5:-1]}'.encode(), addr)
             else:
                 exec(rSrv.cmd, globals())
-                if not hasattr(rSrv, 'u'):
-                    with open('rSrvTemp.pkl', 'rb') as f:
-                        rSrv = pickle.load(f)
-
                 if rSrv.cmd.startswith('ans') or 'ans' in globals():
                     ans_str = str(ans)
                     if len(ans_str) > 8000:
@@ -64,7 +58,7 @@ if not hasattr(rSrv, 'u') or rSrv.u is None or rSrv.u.getsockname()[1] != rSrv.s
             print(rSrv.lastErr)
             conn.sendto(rSrv.lastErr.encode(), addr)
 
-    conn.sendto(f'Bye from mServer. Time_used={time.time() - rSrv.tStart} s'.encode(), addr)
+    rSrv.u.sendto(f'Bye from mServer. Time_used={time.time() - rSrv.tStart} s'.encode(), addr)
     # print(f'ValuesSent={rSrv.u.sendto.count}; ValuesReceived={rSrv.u.recvfrom.count}; BytesAvailable={rSrv.u.recvfrom.count}')
-    conn.close()
+    rSrv.u.close()
     # print(f'Всего использовано время ЦПУ={time.time() - rSrv.tStart} с')

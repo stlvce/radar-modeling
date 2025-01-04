@@ -4,8 +4,8 @@ ans = 'v.2.2'
 
 class rSrv:
     serverIp = ""
-    # serverPort = 61444
-    serverPort = 9098
+    serverPort = 9099
+    serverPortRecv = 9098
     toPort = 9092
     toIP = "localhost"
     tcpipinfo = None
