@@ -5,12 +5,12 @@ ans = 'v.2.2'
 class rSrv:
     serverIp = ""
     serverPort = 9099
-    serverPortRecv = 9098
+    serverRecvPort = 9098
     toPort = 9092
     toIP = "localhost"
-    tcpipinfo = None
-    u_list = []
+    serverinfo = None
     u: socket | None = None
+    s: socket | None = None
     tStart = 0
     cmd = ''
     ki = 0
