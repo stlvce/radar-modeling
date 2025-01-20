@@ -69,19 +69,25 @@ def server_run():
                 send_message(f"Ok. Result of the command: {cmd_result}")
             # Установка констант
             elif "Set_Consts;" in rSrv.cmd or "Get_Traekt; print -dmeta" in rSrv.cmd:
+                # Создание массива переменных
                 arr = rSrv.cmd[12:len(rSrv.cmd)-25].split("; ")
                 for el in arr:
                     print("Текущая переменая", el)
+                    # Если переменной нет, то продожаем цикл
                     if el == "":
                         continue
-
+                    
+                    # Убираем скобки из переменной
                     if "(" in el and ")=" in el:
                         exec("".join("".join(el.split("(")).split(")")), globals())
                         continue
-
+                    
+                    # Убираем двоеточие из переменной
                     if ":" in el or ("evs" in el and "'" not in el):
                         exec("='".join(el.split("="))+"'", globals())
                         continue
+                    
+                    # Выполняем присваивание
                     exec(el, globals())
             # Выполнение строк кода
             elif "print(z)" in rSrv.cmd:
@@ -111,4 +117,3 @@ def server_run():
     send_message("Ok. UDP server is down")
 
 server_run()
-    
