@@ -92,6 +92,14 @@ def server_run():
 
                     send_message("Ok. Get_Surface called")
 
+                if "Do_Step" in commands:
+                    # Выполняем присваивание
+                    for el in parsed_params:
+                        print("Параметр", el)
+                        exec(el, globals())
+
+                    send_message("Ok. Do_Step called")
+
                 if "print -dmeta" in commands:
                     send_message("Ok. print -dmeta called")
 

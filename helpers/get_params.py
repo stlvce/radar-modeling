@@ -20,12 +20,15 @@ def get_params(init_arr: List[str]) -> List[str]:
         if "{" in el and "}=" in el:
             curr_var = parse_braces(el)
 
-        # Убираем двоеточие из параметра
+        # Обработка двоеточия
         if ":" in el:
             curr_var = parse_colon(el)
 
-        # Убираем двоеточие из параметра
-        if ":" in el or ("evs" in el and "'" not in el):
+        # Обработка evs
+        if "evs" in el and "'" not in el:
+            curr_var = "='".join(el.split("=")) + "'"
+
+        if "test.Xcr" in el or "test.Zcr" in el:
             curr_var = "='".join(el.split("=")) + "'"
 
         res.append(curr_var)
