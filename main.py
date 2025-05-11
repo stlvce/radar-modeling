@@ -4,8 +4,7 @@ import re
 
 from settings.server import rSrv, ans
 from settings.init_variables import *  # noqa: F403
-from helpers import send_message, print_log, set_consts
-from parsers import parse_colon
+from helpers import send_message, print_log, get_params
 from test.test_func import *  # noqa: F403
 
 
@@ -33,7 +32,6 @@ def server_run():
                 print_log(rSrv.cmd, data[1])
 
                 # Выполнение команды из сообщения
-                # Обработка выхода
                 if "exit" in rSrv.cmd:
                     break
 
@@ -55,70 +53,60 @@ def server_run():
                     if len(ans_str) > 8000:
                         ans_str = ans_str[:8000] + " ..."
                     send_message(f"Ok. ans={ans_str}")
+                    continue
 
                 # Отправка времени работы сервера
-                elif "server time" in rSrv.cmd:
+                if "server time" in rSrv.cmd:
                     send_message(
                         f"Ok. Server uptime - {round(time.time() - rSrv.tStart)} s"
                     )
+                    continue
 
-                # elif "Set_Consts;" in rSrv.cmd:
-                #     set_consts(rSrv.cmd)
-                #     send_message("Ok. Consts set")
+                parsed_params = get_params(vars)
 
                 # Установка констант
-                elif (
-                    "Set_Consts;" in rSrv.cmd
-                    or "Get_Traekt; print -dmeta" in rSrv.cmd
-                    or "Get_Surface; print -dmeta" in rSrv.cmd
-                ):
-                    for el in vars:
-                        # Если переменной нет, то продожаем цикл
-                        if el == "":
-                            continue
+                if "Set_Consts" in commands:
+                    # Выполняем присваивание
+                    for el in parsed_params:
+                        print("Текущая константа", el)
+                        exec(el, globals())
 
-                        curr_var = el
+                    send_message("Ok. Consts setted")
 
-                        # Убираем скобки из переменной
-                        if "(" in el and ")=" in el:
-                            curr_var = "".join("".join(el.split("(")).split(")"))
+                if "Get_MiXyZ" in commands:
+                    send_message("Ok. Get_MiXyZ called")
 
-                        if "{" in el and "}=" in el:
-                            curr_var = "".join("".join(el.split("{")).split("}"))
+                if "Get_Traekt" in commands:
+                    # Выполняем присваивание
+                    for el in parsed_params:
+                        print("Параметр", el)
+                        exec(el, globals())
 
-                        # Убираем двоеточие из переменной
-                        if ":" in el:
-                            curr_var = parse_colon(el)
+                    send_message("Ok. Get_Traekt called")
 
-                        # Убираем двоеточие из переменной
-                        if ":" in el or ("evs" in el and "'" not in el):
-                            curr_var = "='".join(el.split("=")) + "'"
+                if "Get_Surface" in commands:
+                    # Выполняем присваивание
+                    for el in parsed_params:
+                        print("Параметр", el)
+                        exec(el, globals())
 
-                        # Выполняем присваивание
-                        print("Текущая переменая", curr_var)
-                        exec(curr_var, globals())
+                    send_message("Ok. Get_Surface called")
 
-                    send_message("Ok. Vars created")
+                if "print -dmeta" in commands:
+                    send_message("Ok. print -dmeta called")
 
-                # Выполнение строк кода
-                elif "print(z)" in rSrv.cmd:
-                    test_str = "\n".join(rSrv.cmd.split(" "))
-                    print(test_str)
-                    x = compile(test_str, "test", "exec")
-                    exec(x)
-
-                # Операция присвивания
-                elif "set" in rSrv.cmd and "=" in rSrv.cmd:
+                # Операция присвивания | Пример: set a=1
+                if "set" in rSrv.cmd and "=" in rSrv.cmd:
                     pattern = r"set\s+([a-zA-Z_][a-zA-Z0-9_]*\s*=\s*[^;]+)"
                     match = re.search(pattern, rSrv.cmd)
                     if match:
                         assignment = match.group(1)
                         exec(assignment, globals())
+                    continue
 
                 # Выполнение строки кода
-                else:
-                    result = eval(rSrv.cmd, globals())
-                    send_message(f"Ok. {str(result)}")
+                # result = eval(rSrv.cmd, globals())
+                # send_message(f"Ok. {str(result)}")
 
             except socket.timeout:
                 continue  # ждём следующей итерации
