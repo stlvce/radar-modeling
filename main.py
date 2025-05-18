@@ -100,6 +100,14 @@ def server_run():
 
                     send_message("Ok. Do_Step called")
 
+                if "Do_SignMod" in commands:
+                    # Выполняем присваивание
+                    for el in parsed_params:
+                        print("Параметр", el)
+                        exec(el, globals())
+
+                    send_message("Ok. Do_SignMod called")
+
                 if "print -dmeta" in commands:
                     send_message("Ok. print -dmeta called")
 

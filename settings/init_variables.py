@@ -58,6 +58,13 @@ class Rs:
     Log: int
     Wnd: int
     Focus: int
+    Logi: int
+    Rmin: int
+    Rmax: int
+    GB: int
+    Log: int
+    Wnd: int
+    Focus: int
 
 
 class Mi:
@@ -80,11 +87,12 @@ class Mi:
 
 class test:
     figext: int
-    # TODO не знаю
-    Xcr: any
-    Zcr: any
+    Xcr: float
+    Zcr: float
     Nadir: int
     SWT: int
+    pF: int
+    pN: int
 
 
 class St:
@@ -131,17 +139,11 @@ class Sf:
 class Sea:
     rho: int
     WindV: int
-    # TODO dH вызывается, не знаю тип итоговый
-    WaveL: float
+    WaveL: int
 
     Shift: int
     depth: int
     nr: int
-
-
-# TODO не знаю че это
-def dH(a):
-    return a
 
 
 def evs():
