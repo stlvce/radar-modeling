@@ -6,6 +6,7 @@ from settings.server import rSrv, ans
 from settings.init_variables import *  # noqa: F403
 from helpers import send_message, print_log, get_params
 from test.test_func import *  # noqa: F403
+from scripts import get_traekt
 
 
 def server_run():
@@ -81,7 +82,7 @@ def server_run():
                     for el in parsed_params:
                         print("Параметр", el)
                         exec(el, globals())
-
+                    get_traekt(globals())
                     send_message("Ok. Get_Traekt called")
 
                 if "Get_Surface" in commands:
