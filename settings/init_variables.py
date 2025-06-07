@@ -134,6 +134,16 @@ class Sf:
     WindFi: int
     AirT: int
     TownD: int
+    XZstep: int
+    maxY: int
+    Elev: int
+    Dspot: int
+    x: int
+    z: int
+    rad_mul: float
+    x_size: int
+    z_size: int
+    med_shift: float
 
 
 class Sea:
@@ -148,3 +158,7 @@ class Sea:
 
 def evs():
     eval()
+
+
+def Relief():
+    pass

@@ -1,7 +1,6 @@
 import numpy as np
 import time
 import warnings
-from typing import Any
 
 # Предполагается, что здесь определены значения c, f0, St, Rs и т. д.
 # Здесь подразумевается, что evs является словарем для доступа к переменным
@@ -103,13 +102,3 @@ for m in range(Tr.N + 1):
         St.V[m, 1, n] = evs['St']['Vy']
         St.V[m, 2, n] = evs['St']['Vz']
         St.Ang[m, 0, n] = np.radians(evs['St']['tang'])
-
-
-
-
-
-def get_traekt(
-    globals: dict[str, Any],
-    params=None,
-):
-    print(globals["vidDOR1"])

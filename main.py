@@ -6,7 +6,7 @@ from settings.server import rSrv, ans
 from settings.init_variables import *  # noqa: F403
 from helpers import send_message, print_log, get_params
 from test.test_func import *  # noqa: F403
-from scripts import get_traekt
+from scripts import get_relief
 
 
 def server_run():
@@ -64,50 +64,34 @@ def server_run():
                     continue
 
                 parsed_params = get_params(vars)
+                # Выполняем присваивание
+                for el in parsed_params:
+                    print("Параметр", el)
+                    exec(el, globals())
 
                 # Установка констант
                 if "Set_Consts" in commands:
-                    # Выполняем присваивание
-                    for el in parsed_params:
-                        print("Текущая константа", el)
-                        exec(el, globals())
-
                     send_message("Ok. Consts setted")
 
                 if "Get_MiXyZ" in commands:
                     send_message("Ok. Get_MiXyZ called")
 
                 if "Get_Traekt" in commands:
-                    # Выполняем присваивание
-                    for el in parsed_params:
-                        print("Параметр", el)
-                        exec(el, globals())
-                    get_traekt(globals())
                     send_message("Ok. Get_Traekt called")
 
                 if "Get_Surface" in commands:
-                    # Выполняем присваивание
-                    for el in parsed_params:
-                        print("Параметр", el)
-                        exec(el, globals())
-
                     send_message("Ok. Get_Surface called")
 
                 if "Do_Step" in commands:
-                    # Выполняем присваивание
-                    for el in parsed_params:
-                        print("Параметр", el)
-                        exec(el, globals())
-
                     send_message("Ok. Do_Step called")
 
                 if "Do_SignMod" in commands:
-                    # Выполняем присваивание
-                    for el in parsed_params:
-                        print("Параметр", el)
-                        exec(el, globals())
-
                     send_message("Ok. Do_SignMod called")
+
+                if "Get_Relief" in commands:
+                    Sf, Relief = get_relief(globals())
+
+                    send_message("Ok. Get_Relief called")
 
                 if "print -dmeta" in commands:
                     send_message("Ok. print -dmeta called")

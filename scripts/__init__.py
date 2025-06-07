@@ -1,3 +1,4 @@
-from .Get_Traekt import get_traekt
+from .Set_MiParam import calculate_relative_powers
+from .Get_Relief import get_relief
 
-__all__ = ["get_traekt"]
+__all__ = ["calculate_relative_powers", "get_relief"]
