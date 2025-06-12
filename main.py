@@ -5,7 +5,6 @@ import re
 from settings.server import rSrv, ans
 from settings.init_variables import *  # noqa: F403
 from helpers import send_message, print_log, get_params
-from test.test_func import *  # noqa: F403
 from scripts import get_relief
 
 
