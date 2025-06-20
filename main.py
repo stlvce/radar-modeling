@@ -62,13 +62,13 @@ def server_run():
                     )
                     continue
 
-                parsed_params = get_params(vars)
                 # Выполняем присваивание
+                parsed_params = get_params(vars)
                 for el in parsed_params:
                     print("Параметр", el)
                     exec(el, globals())
 
-                # Установка констант
+                # Исполнение команд
                 if "Set_Consts" in commands:
                     send_message("Ok. Consts setted")
 
@@ -89,6 +89,7 @@ def server_run():
 
                 if "Get_Relief" in commands:
                     Sf, Relief = get_relief(globals())
+                    print(f"Sf={Sf.__dict__} Relief={Relief.__dict__}")
 
                     send_message("Ok. Get_Relief called")
 
