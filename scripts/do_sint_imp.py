@@ -10,6 +10,9 @@ def init_radar_impulse_processor_globals(
     """
     Инициализация параметров и оконной функции в globals.
     Если параметры отсутствуют, задаются значения по умолчанию.
+
+    Args:
+        globals (dict[str, Any]): Глобальные переменные
     """
     Rs = globals.get("Rs", {})
     # Устанавливаем параметры по умолчанию, если отсутствуют
@@ -41,6 +44,12 @@ def process_radar_impulse(globals: dict):
     """
     Основной метод обработки импульсных РЛ данных.
     Возвращает массив RLI и сохраняет его в globals.
+
+    Args:
+        globals (dict[str, Any]): Глобальные переменные
+
+    Returns:
+        _Array[tuple[int, int, int], float64]
     """
     dtau = globals["dtau"]
     c = globals["c"]
@@ -93,6 +102,9 @@ def process_radar_impulse(globals: dict):
 def plot_radar_impulse_results(globals: dict):
     """
     Визуализация результатов обработки.
+
+    Args:
+        globals (dict[str, Any]): Глобальные переменные
     """
     if "RLI" not in globals or globals["RLI"] is None:
         raise ValueError("Сначала выполните process_radar_impulse()")
@@ -148,6 +160,10 @@ def plot_radar_impulse_results(globals: dict):
 def save_radar_impulse_results(globals: dict, filename: str = "RLIimp.npz"):
     """
     Сохранение результатов обработки в файл.
+
+    Args:
+        globals (dict[str, Any]): Глобальные переменные
+        filename (str, optional): Имя файла. Defaults to "RLIimp.npz"
     """
     if "RLI" not in globals or globals["RLI"] is None:
         raise ValueError("Сначала выполните process_radar_impulse()")

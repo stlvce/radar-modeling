@@ -6,6 +6,16 @@ import matplotlib.pyplot as plt
 def process_fm_radar(
     globals: dict[str, Any] | None = None,
 ):
+    """
+    <Название функции>
+
+    Args:
+        globals (dict[str, Any]): Глобальные переменные
+
+    Returns:
+        _Array[tuple[int, int, int], complexfloating[_32Bit, _32Bit]]
+    """
+
     # Извлекаем параметры из globals
     dtau = globals["dtau"]
     c = globals["c"]
@@ -50,6 +60,13 @@ def process_fm_radar(
 
 
 def plot_fm_radar_results(globals: dict):
+    """
+    <Название функции>
+
+    Args:
+        globals (dict[str, Any]): Глобальные переменные
+    """
+
     # Проверка наличия результатов
     if "RLI" not in globals or globals["RLI"] is None:
         raise ValueError("Сначала выполните process_fm_radar()")
@@ -93,6 +110,14 @@ def plot_fm_radar_results(globals: dict):
 
 
 def save_fm_radar_results(globals: dict, filename: str = "RLIfm.npz"):
+    """
+    <Название функции>
+
+    Args:
+        globals (dict[str, Any]): Глобальные переменные
+        filename (str, optional): Имя файла. Defaults to "RLIfm.npz".
+    """
+
     if "RLIFM" not in globals or globals["RLIFM"] is None:
         raise ValueError("Сначала выполните process_fm_radar()")
     np.savez(filename, RLIFM=globals["RLIFM"], Rs=globals.get("Rs", {}))

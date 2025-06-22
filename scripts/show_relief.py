@@ -3,6 +3,12 @@ import matplotlib.pyplot as plt
 
 
 def show_relief(Relief):
+    """
+    Построение поверхности
+
+    Args:
+        Relief (Relief): <Название параметра>
+    """
     # Здесь мы предполагаем наличие тестового словаря. Задайте его, если он не определён.
     test = {"h": [None, None, None], "fstep": [100, 100]}  # Пример значений fstep
     Sf = {

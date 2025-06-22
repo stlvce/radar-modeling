@@ -7,6 +7,16 @@ from settings.init_variables import Sf as TSf
 def get_relief(
     globals: dict[str, Any] | None = None,
 ):
+    """
+    <Название функции>
+
+    Args:
+        globals (dict[str, Any]): Глобальные переменные
+
+    Returns:
+        tuple[Sf, Relief]
+    """
+
     Sf: TSf = globals["Sf"]
     Relief = globals["Relief"]
     # Проверяем существование Relief, и если отсутствует (в Python мы просто проверим, существует ли переменная)

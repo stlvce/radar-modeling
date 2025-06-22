@@ -5,6 +5,13 @@ from typing import Any
 def get_traekt(
     globals: dict[str, Any] | None = None,
 ):
+    """
+    <Название функции>
+
+    Args:
+        globals (dict[str, Any]): Глобальные переменные
+    """
+
     f0 = globals["f0"]  # TODO в init_variable нет
     Ym = globals["Ym"]
     Rs = globals["Rs"]

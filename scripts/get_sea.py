@@ -6,6 +6,13 @@ from typing import Any
 def get_sea(
     globals: dict[str, Any] | None = None,
 ):
+    """
+    <Название функции>
+
+    Args:
+        globals (dict[str, Any]): Глобальные переменные
+    """
+
     Sea = globals["Sea"]
     Sf = globals["Sf"]
     g = globals["g"]  # TODO нет в init_variable

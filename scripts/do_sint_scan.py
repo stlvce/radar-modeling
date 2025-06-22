@@ -11,6 +11,9 @@ def init_radar_image_processor_globals(
 ):
     """
     Инициализация параметров Rs и других значений по умолчанию.
+
+    Args:
+        globals (dict[str, Any]): Глобальные переменные
     """
     Rs = globals.get("Rs", {})
     Rs.setdefault("Rmin", 0.0)
@@ -34,6 +37,12 @@ def process_radar_image(globals: dict):
     """
     Основной метод обработки РЛ изображений.
     Результат сохраняется в globals['RLI'] и возвращается.
+
+    Args:
+        globals (dict[str, Any]): Глобальные переменные
+
+    Returns:
+        _Array[tuple[int, int], float64]
     """
     dtau = globals["dtau"]
     c = globals["c"]
@@ -68,6 +77,9 @@ def process_radar_image(globals: dict):
 def plot_radar_image_results(globals: dict):
     """
     Визуализация результатов обработки.
+
+    Args:
+        globals (dict[str, Any]): Глобальные переменные
     """
     if "RLI" not in globals or globals["RLI"] is None:
         raise ValueError("Сначала выполните process_radar_image()")
@@ -100,6 +112,10 @@ def plot_radar_image_results(globals: dict):
 def save_radar_image_results(globals: dict, filename: str = "RLIscan.npz"):
     """
     Сохранение результатов обработки в файл.
+
+    Args:
+        globals (dict[str, Any]): Глобальные переменные
+        filename (str, optional): Имя файла. Defaults to "RLIscan.npz"
     """
     if "RLI" not in globals or globals["RLI"] is None:
         raise ValueError("Сначала выполните process_radar_image()")
