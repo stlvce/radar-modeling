@@ -89,10 +89,11 @@ def server_run():
 
                 if "Get_Relief" in commands:
                     Sf, Relief = get_relief(globals())
-                    show_relief(Relief)
-                    print(f"Sf={Sf.__dict__} Relief={Relief.__dict__}")
+                    relief_img = show_relief(Relief)
+                    print(f"Sf={Sf.__dict__} Relief={Relief}")
 
                     send_message("Ok. Get_Relief called")
+                    send_message(relief_img)
 
                 if "print -dmeta" in commands:
                     send_message("Ok. print -dmeta called")
@@ -105,10 +106,6 @@ def server_run():
                         assignment = match.group(1)
                         exec(assignment, globals())
                     continue
-
-                # Выполнение строки кода
-                # result = eval(rSrv.cmd, globals())
-                # send_message(f"Ok. {str(result)}")
 
             except socket.timeout:
                 continue  # ждём следующей итерации

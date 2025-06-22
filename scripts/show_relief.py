@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import base64
 
 
 def show_relief(Relief):
@@ -77,4 +78,10 @@ def show_relief(Relief):
 
     # Показываем график
     plt.colorbar()  # Добавляем цветовую шкалу
-    plt.show()
+
+    # Сохранение графика
+    plt.savefig("plots/relief_plot.png")
+    with open("plots/relief_plot.png", "rb") as image_file:
+        image_data = image_file.read()
+    encoded_image = base64.b64encode(image_data).decode("utf-8")
+    return encoded_image
