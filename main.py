@@ -5,7 +5,7 @@ import re
 from settings.server import rSrv, ans
 from settings.init_variables import *  # noqa: F403
 from helpers import send_message, print_log, get_params
-from scripts import get_relief
+from scripts import get_relief, show_relief
 
 
 def server_run():
@@ -89,6 +89,7 @@ def server_run():
 
                 if "Get_Relief" in commands:
                     Sf, Relief = get_relief(globals())
+                    show_relief(Relief)
                     print(f"Sf={Sf.__dict__} Relief={Relief.__dict__}")
 
                     send_message("Ok. Get_Relief called")
