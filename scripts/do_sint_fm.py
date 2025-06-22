@@ -7,7 +7,11 @@ def process_fm_radar(
     globals: dict[str, Any] | None = None,
 ):
     """
-    <Название функции>
+    Обработка FM-радара
+
+    Выполняет двумерное преобразование Фурье
+    и фазовую коррекцию комплексных сигналов
+    FM-радара для получения карты дальности и скорости целей
 
     Args:
         globals (dict[str, Any]): Глобальные переменные
@@ -61,7 +65,10 @@ def process_fm_radar(
 
 def plot_fm_radar_results(globals: dict):
     """
-    <Название функции>
+    Отображение результатов FM-радара
+
+    Строит графики изображений по данным
+    обработки FM-радара из globals.
 
     Args:
         globals (dict[str, Any]): Глобальные переменные
@@ -111,7 +118,10 @@ def plot_fm_radar_results(globals: dict):
 
 def save_fm_radar_results(globals: dict, filename: str = "RLIfm.npz"):
     """
-    <Название функции>
+    Сохранение результатов FM-радара
+
+    Сохраняет обработанные данные FM-радара
+    и параметры в файл формата .npz.
 
     Args:
         globals (dict[str, Any]): Глобальные переменные
