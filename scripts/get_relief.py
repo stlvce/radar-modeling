@@ -21,15 +21,22 @@ def get_relief(
     Relief = globals["Relief"]
     # Проверяем существование Relief, и если отсутствует (в Python мы просто проверим, существует ли переменная)
     # Поскольку Python не поддерживает такие же проверки, используем try-except
-    try:
-        Relief
-    except NameError:
-        # Инициализация значений в Sf
-        Sf.XZstep = 10
-        Sf.maxY = 100
-        Sf.Elev = 25
-        Sf.Relief = "Test_cos_relief"
-        Sf.Dspot = 100
+    # TODO тут поменять
+    Sf.XZstep = 10
+    Sf.maxY = 100
+    Sf.Elev = 25
+    Sf.Relief = "Test_cos_relief"
+    Sf.Dspot = 100
+
+    # try:
+    #     Relief
+    # except NameError:
+    #     # Инициализация значений в Sf
+    #     Sf.XZstep = 10
+    #     Sf.maxY = 100
+    #     Sf.Elev = 25
+    #     Sf.Relief = "Test_cos_relief"
+    #     Sf.Dspot = 100
 
     # Проверка на пустоту и существование Relief
     if Sf.Relief or "Relief" not in globals:
@@ -43,7 +50,7 @@ def get_relief(
 
         elif Sf.Relief == "Test_cos_relief":
             Sf.rad_mul = np.pi / 180 / Sf.Dspot * 4
-            Sf["n"] = round(Sf.Dspot)
+            Sf.n = round(Sf.Dspot)
             Sf.x = Sf.Dspot
             Sf.z = Sf.Dspot
             X = np.ones((Sf.z, 1)) * np.arange(1, Sf.x + 1)
@@ -51,8 +58,8 @@ def get_relief(
             XZ = X + Z * 1j  # Двумерный массив координат фацетов
             Relief = Sf.maxY * (
                 0.5
-                * np.cos((np.real(XZ) - (Sf["n"] + 1) / 2) * Sf.rad_mul)
-                * np.cos((np.imag(XZ) - (Sf["n"] + 1) / 2) * Sf.rad_mul)
+                * np.cos((np.real(XZ) - (Sf.n + 1) / 2) * Sf.rad_mul)
+                * np.cos((np.imag(XZ) - (Sf.n + 1) / 2) * Sf.rad_mul)
                 + (0.5 - Sf.Elev / 100)
             )
 

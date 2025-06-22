@@ -144,6 +144,7 @@ class Sf:
     x_size: int
     z_size: int
     med_shift: float
+    n: int
 
 
 class Sea:
