@@ -11,8 +11,11 @@ from .do_sint_scan import (
     plot_radar_image_results,
     save_radar_image_results,
 )
-from .set_mi_param import calculate_relative_powers
 from .get_relief import get_relief
+from .get_sea import get_sea
+from .get_traekt import get_traekt
+from .set_mi_param import calculate_relative_powers
+from .show_relief import show_relief
 
 __all__ = [
     "process_fm_radar",
@@ -26,6 +29,9 @@ __all__ = [
     "process_radar_image",
     "plot_radar_image_results",
     "save_radar_image_results",
-    "calculate_relative_powers",
     "get_relief",
+    "get_sea",
+    "get_traekt",
+    "calculate_relative_powers",
+    "show_relief",
 ]
