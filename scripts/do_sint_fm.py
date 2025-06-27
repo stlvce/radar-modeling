@@ -2,6 +2,31 @@ from typing import Any
 import numpy as np
 import matplotlib.pyplot as plt
 
+import io
+from PIL import Image
+import sys
+
+if sys.platform.startswith("win"):
+    import win32clipboard
+    from PIL import BmpImagePlugin
+
+    def copy_image_to_clipboard(img: Image.Image):
+        # Сохраняем изображение в BMP-поток
+        output = io.BytesIO()
+        img.convert("RGB").save(output, "BMP")
+        data = output.getvalue()[14:]  # Убираем заголовок BMP (14 байт)
+        output.close()
+
+        # Копируем в буфер обмена (Windows API)
+        win32clipboard.OpenClipboard()
+        win32clipboard.EmptyClipboard()
+        win32clipboard.SetClipboardData(win32clipboard.CF_DIB, data)
+        win32clipboard.CloseClipboard()
+else:
+
+    def copy_image_to_clipboard(img: Image.Image):
+        raise NotImplementedError("Копирование в буфер работает только на Windows.")
+
 
 def process_fm_radar(
     globals: dict[str, Any] | None = None,
@@ -60,7 +85,7 @@ def process_fm_radar(
     # Сохраняем результаты обратно в globals
     globals["RLI"] = RLI
     globals["RLIFM"] = RLIFM
-    return RLIFM
+    return globals
 
 
 def plot_fm_radar_results(globals: dict):

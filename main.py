@@ -1,11 +1,29 @@
 import socket
 import time
 import re
+from numpy import cos, random
 
 from settings.server import rSrv, ans
 from settings.init_variables import *  # noqa: F403
 from helpers import send_message, print_log, get_params
-from scripts import get_relief, show_relief
+from scripts import (
+    process_fm_radar,
+    plot_fm_radar_results,
+    save_fm_radar_results,
+    process_radar_impulse,
+    plot_radar_impulse_results,
+    init_radar_impulse_processor_globals,
+    save_radar_impulse_results,
+    init_radar_image_processor_globals,
+    process_radar_image,
+    plot_radar_image_results,
+    save_radar_image_results,
+    get_relief,
+    get_sea,
+    get_traekt,
+    calculate_relative_powers,
+    show_relief,
+)
 
 
 def server_run():
@@ -89,11 +107,28 @@ def server_run():
 
                 if "Get_Relief" in commands:
                     Sf, Relief = get_relief(globals())
-                    relief_img = show_relief(Relief)
-                    print(f"Sf={Sf.__dict__} Relief={Relief}")
+                    show_relief(Relief)
 
                     send_message("Ok. Get_Relief called")
-                    send_message(relief_img)
+
+                if "Do_SintFM" in commands:
+                    test_globals = {
+                        "dtau": 1e-6,
+                        "c": 3e8,
+                        "Wd": 1e6,
+                        "H": 1.0,
+                        "ChannelN": 3,
+                        "Nimp": 64,
+                        "Timp": 1e-2,
+                        "SigCN": random.rand(3, 100, 100),
+                        "SigSN": random.rand(3, 100, 100),
+                        "Rs": {"Rmin": 0.0, "Rmax": 1000, "Log": True, "GB": 20},
+                    }
+                    test_globals = process_fm_radar(test_globals)
+                    plot_fm_radar_results(test_globals)
+                    save_fm_radar_results(test_globals)
+
+                    send_message("Ok. Do_SintFM called")
 
                 if "print -dmeta" in commands:
                     send_message("Ok. print -dmeta called")
