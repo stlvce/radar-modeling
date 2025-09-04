@@ -1,6 +1,7 @@
 from socket import socket
 
-ans = 'v.2.2'
+ans = "v.2.2"
+
 
 class rSrv:
     serverIp = ""
@@ -8,9 +9,10 @@ class rSrv:
     serverRecvPort = 9098
     toIP = "localhost"
     toPort = 9092
-    serverinfo = None
+    serverinfo: list[tuple] | None = None
     u: socket | None = None
     s: socket | None = None
     tStart = 0
-    cmd = ''
-    lastErr = ''
+    cmd = ""
+    lastErr = ""
+    tStart: float

@@ -16,7 +16,7 @@ def server_run():
     )  # Информация о сервере
     rSrv.u = socket.socket(
         socket.AF_INET, socket.SOCK_DGRAM
-    )  # Создание порта для получение сообщений
+    )  # Создание порта для получения сообщений
     rSrv.u.bind((rSrv.serverIp, rSrv.serverRecvPort))
     rSrv.u.settimeout(1.0)  # Устанавливаем таймаут в 1 секунду
     send_message(
@@ -70,7 +70,7 @@ def server_run():
 
                 # Исполнение команд
                 if "Set_Consts" in commands:
-                    send_message("Ok. Consts setted")
+                    send_message("Ok. Consts set")
 
                 if "Get_MiXyZ" in commands:
                     send_message("Ok. Get_MiXyZ called")
@@ -112,7 +112,10 @@ def server_run():
 
             # Обработка ошибок
             except Exception as e:
-                rSrv.lastErr = f"{str(e)} In_file: {e.__traceback__.tb_frame.f_code.co_filename}, line {e.__traceback__.tb_lineno}"
+                if e.__traceback__ is not None:
+                    rSrv.lastErr = f"{str(e)} In_file: {e.__traceback__.tb_frame.f_code.co_filename}, line {e.__traceback__.tb_lineno}"
+                else:
+                    rSrv.lastErr = f"{str(e)}"
                 print(f"\n{rSrv.lastErr}")
                 send_message(rSrv.lastErr)
 
@@ -120,10 +123,10 @@ def server_run():
         print("\n[INFO] Server stopped manually via Ctrl+C")
 
     finally:
-        # Отключение сервера при KeyboardInterrupt и команды "exit"
         send_message("Ok. UDP server is down")
-        rSrv.u.close()
+        rSrv.u.close()  # Отключение сервера при KeyboardInterrupt и команды "exit"
 
 
+# Запуск сервера
 if __name__ == "__main__":
     server_run()

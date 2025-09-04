@@ -157,8 +157,8 @@ class Sea:
     nr: int
 
 
-def evs():
-    eval()
+def evs(source: str):
+    eval(source)
 
 
 def Relief():
