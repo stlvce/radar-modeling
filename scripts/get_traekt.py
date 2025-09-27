@@ -1,122 +1,107 @@
 import numpy as np
-from typing import Any
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+from PIL import Image
+import os
+
+c = 3e8  # скорость света, м/с
 
 
 def get_traekt(
-    globals: dict[str, Any] | None = None,
+    Nimp=100,
+    Xa=0,
+    Ya=1000,
+    Za=0,
+    Vx=200,
+    Vy=0,
+    Vz=0,
+    St_N=1,
+    St_Xs=0,
+    St_Ys=0,
+    St_Zs=0,
+    result_path="resultFig2.bmp",
 ):
     """
-    <Название функции>
-
-    Args:
-        globals (dict[str, Any]): Глобальные переменные
+    Генерация траектории цели и (опционально) станций.
+    :param Nimp: число импульсов
+    :param Xa,Ya,Za: начальные координаты цели (x,h,z)
+    :param Vx,Vy,Vz: скорости цели
+    :param St_N: число станций
+    :param St_Xs, St_Ys, St_Zs: координаты станции
     """
 
-    f0 = globals["f0"]  # TODO в init_variable нет
-    Ym = globals["Ym"]
-    Rs = globals["Rs"]
-    St = globals["St"]
-    Tr = globals["Tr"]
-    H = globals["H"]
-    t = globals["t"]
-    # Предполагается, что здесь определены значения c, f0, St, Rs и т. д.
-    # Здесь подразумевается, что evs является словарем для доступа к переменным
-    # evs = {...}
-    # Пример инициализации параметров
-    c = 3e8  # скорость света в м/с
-    mean_f0 = np.mean(f0)  # замена mean(f0)
-    Nimp = int(Rs.Nimp)
-
-    if Ym == 0:
-        tauimp = Rs.tauimp
-        Timp = Rs.Timp
-        dtau = Rs.dtau
-        Rs.Tm = Rs.Timp
-        Tm = Timp
-        Rs.dR = dtau * c  # шаг по дальности
-    else:
-        Tm = Rs.Tm  # TODO в init_variable нет
-
-    snr = Rs.snr
-    Rs.Lambda = c / mean_f0  # средняя длина волны
-    test_canceling = False
-    perc_mem = -1  # процент выполнения для вывода по UDP
-    hwb = {"canceling": 0}  # Используем словарь для хранения статуса
-
-    n = np.arange(1, St.N + 1)  # счетчик для всех целей
-
-    if "Tr" in locals() and len(Tr.Pos) > 0:
-        Tr.Pos[0, :] = Tr.Pos[-1, :]  # начальная позиция (x,h,z)
-        if St.N > 0:
-            St.Pos[0, :, n] = St.Pos[-1, :, n]
-
-    else:
-        Tr.H1 = H
-        Tr.N = Nimp
-        # Подготовка массивов
-        Tr.t = np.zeros(Tr.N + 1)
-        Tr.Pos = np.zeros((Tr.N + 1, 3))
-        Tr.V = np.zeros((Tr.N, 3))
-        Tr.Ang = np.zeros((Tr.N, 3))
-        Tr.Tm = np.zeros(Tr.N)
-        Tr.Ti = np.zeros(Tr.N)
-        Tr.Tm_Ni = np.zeros(Tr.N)
-        Tr.Tm_i = np.zeros(Tr.N)
-        Tr.TiT = np.zeros(Tr.N)
-        Tr.TiR = np.zeros(Tr.N)
-        Tr.Pz = np.zeros(Tr.N)  # мощность передатчика возможно зависит от высоты
-
-        # Начальные значения
-        Tr.Pos[0, :] = [Tr.Xa, Tr.Ya, Tr.Za]
-        St.Pos = np.zeros((Tr.N + 1, 3, St.N))
-        St.Pos[0, :, n] = [St.Xs, St.Ys, St.Zs]
-        Tr.V = np.zeros((Tr.N, 3, St.N))
-        Tr.Ang = np.zeros((Tr.N, 3, St.N))
-
-    # Константы
-    TrVall = globals["TrVall"]  # TODO в init_variable нет
-    StVall = globals["StVall"]  # TODO в init_variable нет
-    consts = {
-        "TrVall": np.array([Tr.Vx, Tr.Vy, Tr.Vz]),
-        "TrVskip": np.array_equal(TrVall, "000"),
-        "StVall": np.array([St.Vx, St.Vy, St.Vz]),
-        "StVskip": np.array_equal(StVall, "000"),
+    # структура для цели (Tr)
+    Tr = {
+        "N": Nimp,
+        "Pos": np.zeros((Nimp + 1, 3)),
+        "V": np.zeros((Nimp, 3)),
+        "Ang": np.zeros((Nimp, 3)),
+        "t": np.zeros(Nimp + 1),
     }
 
-    # Расчет точек в траектории
-    for m in range(Tr.N + 1):
-        if hwb["canceling"]:
-            test_canceling = True
-            break
+    # начальная позиция цели
+    Tr["Pos"][0, :] = [Xa, Ya, Za]
 
-        perc = round(100 * (m) / (Tr.N + 1))
+    # структура для станции (St)
+    St = {
+        "N": St_N,
+        "Pos": np.zeros((Nimp + 1, 3, St_N)),
+        "V": np.zeros((Nimp, 3, St_N)),
+        "Ang": np.zeros((Nimp, 3, St_N)),
+    }
 
-        if perc > perc_mem:
-            perc_mem = perc
-            # Здесь может быть добавлен код для обновления прогресса
+    # начальная позиция станции
+    for n in range(St_N):
+        St["Pos"][0, :, n] = [St_Xs, St_Ys, St_Zs]
 
-        Tr.t[m] = t  # текущее время в модели
-        if m > 0:
-            dT = t - Tr.t[m - 1]  # время от предыдущего положения в модели, мкс
-            if consts["TrVskip"]:  # расчет точек траектории РЛС
-                Tr.Pos[m, :] = [Tr.Xa, Tr.Ya, Tr.Za]
-            else:  # сдвигаем координаты по вектору скорости
-                Tr.Pos[m, :] = Tr.Pos[m - 1, :] + Tr.V[m - 1, :] * dT
+    # шаг по времени (для примера: 0.1 с)
+    dt = 0.1
 
-            if consts["StVskip"] and St.N > 0:
-                St.Pos[m, :, n] = [St.Xs, St.Ys, St.Zs]
-            elif St.N > 0:
-                St.Pos[m, :, n] = St.Pos[m - 1, :, n] + St.V[m - 1, :, n] * dT
+    # цикл генерации
+    for m in range(1, Nimp + 1):
+        Tr["t"][m] = Tr["t"][m - 1] + dt
+        Tr["V"][m - 1, :] = [Vx, Vy, Vz]
+        Tr["Pos"][m, :] = Tr["Pos"][m - 1, :] + Tr["V"][m - 1, :] * dt
 
-            if m > Tr.N:
-                break
+        for n in range(St_N):
+            St["V"][m - 1, :, n] = [0, 0, 0]  # станции статичны
+            St["Pos"][m, :, n] = St["Pos"][m - 1, :, n]
 
-        H = Tr.Pos[m, 1]  # высота
-        Tr.V[m, :] = [Tr.Vx, Tr.Vy, Tr.Vz]
-        Tr.Ang[m, :] = np.radians([Tr.tang, Tr.kren, Tr.psi])
+    # построение графика
+    fig = plt.figure(figsize=(6, 6), dpi=100)
+    ax: Axes3D = fig.add_subplot(111, projection="3d")
 
-        if St.N > 0:  # расчет точек траектории всех целей
-            St.V[m, 0, n] = St.Vx
-            St.V[m, 1, n] = St.Vy
-            St.V[m, 2, n] = St.Vz
-            St.Ang[m, 0, n] = np.radians(St.tang)
+    # траектория цели
+    ax.plot3D(Tr["Pos"][:, 0], Tr["Pos"][:, 2], Tr["Pos"][:, 1], "-xm", label="Цель")
+
+    # траектория станций
+    if St_N > 0:
+        for n in range(St_N):
+            ax.plot3D(
+                St["Pos"][:, 0, n],
+                St["Pos"][:, 2, n],
+                St["Pos"][:, 1, n],
+                "-dr",
+                label=f"Станция {n + 1}",
+            )
+
+    ax.set_xlabel("x (м)")
+    ax.set_ylabel("z (м)")
+    ax.set_zlabel("y (м)")
+    ax.set_title("Траектория цели и станций")
+    ax.legend()
+    ax.grid(True)
+    ax.axis("equal")
+
+    # сохраняем как PNG временно
+    tmp_path = "tmp.png"
+    plt.tight_layout()
+    plt.savefig(tmp_path, dpi=100)
+    plt.close(fig)
+
+    # конвертация в BMP
+    im = Image.open(tmp_path)
+    im.save(result_path)
+    os.remove(tmp_path)
+
+    return Tr, St

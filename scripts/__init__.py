@@ -16,6 +16,7 @@ from .get_sea import get_sea
 from .get_traekt import get_traekt
 from .set_mi_param import calculate_relative_powers
 from .show_relief import show_relief
+from .get_mixyz import get_mixyz
 
 __all__ = [
     "process_fm_radar",
@@ -34,4 +35,5 @@ __all__ = [
     "get_traekt",
     "calculate_relative_powers",
     "show_relief",
+    "get_mixyz",
 ]

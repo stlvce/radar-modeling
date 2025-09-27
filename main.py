@@ -10,19 +10,12 @@ from scripts import (
     process_fm_radar,
     plot_fm_radar_results,
     save_fm_radar_results,
-    process_radar_impulse,
-    plot_radar_impulse_results,
-    init_radar_impulse_processor_globals,
-    save_radar_impulse_results,
-    init_radar_image_processor_globals,
-    process_radar_image,
-    plot_radar_image_results,
-    save_radar_image_results,
     get_relief,
     get_sea,
     get_traekt,
     calculate_relative_powers,
     show_relief,
+    get_mixyz,
 )
 
 
@@ -53,9 +46,10 @@ def server_run():
                 if "exit" in rSrv.cmd:
                     break
 
-                vars = []
-                commands = []
+                vars = []  # Параметры/константы
+                commands = []  # Команды
 
+                # Получение из сообщения параметров и команд
                 for i in rSrv.cmd.split("; "):
                     if i.strip() == "":
                         continue
@@ -86,14 +80,51 @@ def server_run():
                     print("Параметр", el)
                     exec(el, globals())
 
-                # Исполнение команд
+                # Исполнение команд, print -dmeta можно не исполнять, так как в коде команд создаются изображения
+                # TODO можно убрать
                 if "Set_Consts" in commands:
                     send_message("Ok. Consts set")
 
                 if "Get_MiXyZ" in commands:
+                    # get_mixyz(
+                    #     Nmax=0,  # 0 -> берётся len(sx)*4
+                    #     Rs=1.0,
+                    #     Rz=1.0,
+                    #     Ry=1.0,
+                    #     Zmax=4.0,
+                    #     Ymax=4.0,
+                    #     figext=1,
+                    #     result_path="resultFig1.bmp",
+                    # )
+
+                    get_mixyz(
+                        Nmax=globals()["Mi"].Nmax,
+                        Rs=globals()["Mi"].Rs,
+                        Rz=globals()["Mi"].Rz,
+                        Ry=globals()["Mi"].Ry,
+                        Zmax=globals()["Mi"].Zmax,
+                        Ymax=globals()["Mi"].Ymax,
+                        figext=globals()["test"].figext,
+                        result_path="resultFig1.bmp",
+                    )
+
                     send_message("Ok. Get_MiXyZ called")
 
                 if "Get_Traekt" in commands:
+                    get_traekt(
+                        Nimp=int(globals()["Rs"].Nimp),
+                        Xa=int(globals()["Tr"].Xa),
+                        Ya=int(globals()["Tr"].Ya),
+                        Za=int(globals()["Tr"].Za),
+                        Vx=int(globals()["Tr"].Vx),
+                        Vy=int(globals()["Tr"].Vy),
+                        Vz=int(globals()["Tr"].Vz),
+                        St_N=int(globals()["St"].N),
+                        St_Xs=int(globals()["Tr"].Xa) + 20,
+                        St_Ys=int(globals()["Tr"].Ya),
+                        St_Zs=int(globals()["Tr"].Za),
+                    )
+
                     send_message("Ok. Get_Traekt called")
 
                 if "Get_Surface" in commands:
@@ -127,23 +158,11 @@ def server_run():
                     test_globals = process_fm_radar(test_globals)
                     plot_fm_radar_results(test_globals)
                     save_fm_radar_results(test_globals)
-
                     send_message("Ok. Do_SintFM called")
 
-                if "print -dmeta" in commands:
-                    send_message("Ok. print -dmeta called")
-
-                # Операция присвивания | Пример: set a=1
-                if "set" in rSrv.cmd and "=" in rSrv.cmd:
-                    pattern = r"set\s+([a-zA-Z_][a-zA-Z0-9_]*\s*=\s*[^;]+)"
-                    match = re.search(pattern, rSrv.cmd)
-                    if match:
-                        assignment = match.group(1)
-                        exec(assignment, globals())
-                    continue
-
+            # Ждём следующей итерации
             except socket.timeout:
-                continue  # ждём следующей итерации
+                continue
 
             # Обработка ошибок
             except Exception as e:
@@ -154,12 +173,14 @@ def server_run():
                 print(f"\n{rSrv.lastErr}")
                 send_message(rSrv.lastErr)
 
+    # Обработка остановки сервера при Ctrl+C
     except KeyboardInterrupt:
         print("\n[INFO] Server stopped manually via Ctrl+C")
 
+    # Отключение сервера при KeyboardInterrupt и команды "exit"
     finally:
         send_message("Ok. UDP server is down")
-        rSrv.u.close()  # Отключение сервера при KeyboardInterrupt и команды "exit"
+        rSrv.u.close()
 
 
 # Запуск сервера

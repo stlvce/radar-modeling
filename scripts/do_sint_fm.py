@@ -1,35 +1,27 @@
 from typing import Any
 import numpy as np
 import matplotlib.pyplot as plt
-
 import io
 from PIL import Image
-import sys
+import win32clipboard
 
-if sys.platform.startswith("win"):
-    import win32clipboard
-    from PIL import BmpImagePlugin
 
-    def copy_image_to_clipboard(img: Image.Image):
-        # Сохраняем изображение в BMP-поток
-        output = io.BytesIO()
-        img.convert("RGB").save(output, "BMP")
-        data = output.getvalue()[14:]  # Убираем заголовок BMP (14 байт)
-        output.close()
+def copy_image_to_clipboard(img: Image.Image):
+    # Сохраняем изображение в BMP-поток
+    output = io.BytesIO()
+    img.convert("RGB").save(output, "BMP")
+    data = output.getvalue()[14:]  # Убираем заголовок BMP (14 байт)
+    output.close()
 
-        # Копируем в буфер обмена (Windows API)
-        win32clipboard.OpenClipboard()
-        win32clipboard.EmptyClipboard()
-        win32clipboard.SetClipboardData(win32clipboard.CF_DIB, data)
-        win32clipboard.CloseClipboard()
-else:
-
-    def copy_image_to_clipboard(img: Image.Image):
-        raise NotImplementedError("Копирование в буфер работает только на Windows.")
+    # Копируем в буфер обмена (Windows API)
+    win32clipboard.OpenClipboard()
+    win32clipboard.EmptyClipboard()
+    win32clipboard.SetClipboardData(win32clipboard.CF_DIB, data)
+    win32clipboard.CloseClipboard()
 
 
 def process_fm_radar(
-    globals: dict[str, Any] | None = None,
+    globals: dict[str, Any] = {},
 ):
     """
     Обработка FM-радара
@@ -45,14 +37,11 @@ def process_fm_radar(
         _Array[tuple[int, int, int], complexfloating[_32Bit, _32Bit]]
     """
 
-    # Извлекаем параметры из globals
-    dtau = globals["dtau"]
     c = globals["c"]
     Wd = globals["Wd"]
     H = globals["H"] if globals["H"] > 0 else 10.0
     ChannelN = globals["ChannelN"]
     Nimp = globals["Nimp"]
-    Timp = globals["Timp"]
     SigCN = globals["SigCN"]
     SigSN = globals["SigSN"]
     Rs = globals.get("Rs", {"Rmin": 0.0, "Rmax": 5.1, "Log": False, "GB": 20})
