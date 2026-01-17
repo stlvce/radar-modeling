@@ -4,7 +4,7 @@ import re
 from numpy import cos, random
 
 from settings.server import rSrv, ans
-from settings.init_variables import *  # noqa: F403
+from settings.init_variables import *
 from helpers import send_message, print_log, get_params
 from scripts import (
     process_fm_radar,
@@ -46,10 +46,10 @@ def server_run():
                 if "exit" in rSrv.cmd:
                     break
 
-                vars = []  # Параметры/константы
-                commands = []  # Команды
-
                 # Получение из сообщения параметров и команд
+                vars = []
+                commands = []
+
                 for i in rSrv.cmd.split("; "):
                     if i.strip() == "":
                         continue
@@ -81,22 +81,10 @@ def server_run():
                     exec(el, globals())
 
                 # Исполнение команд, print -dmeta можно не исполнять, так как в коде команд создаются изображения
-                # TODO можно убрать
                 if "Set_Consts" in commands:
                     send_message("Ok. Consts set")
 
                 if "Get_MiXyZ" in commands:
-                    # get_mixyz(
-                    #     Nmax=0,  # 0 -> берётся len(sx)*4
-                    #     Rs=1.0,
-                    #     Rz=1.0,
-                    #     Ry=1.0,
-                    #     Zmax=4.0,
-                    #     Ymax=4.0,
-                    #     figext=1,
-                    #     result_path="resultFig1.bmp",
-                    # )
-
                     get_mixyz(
                         Nmax=globals()["Mi"].Nmax,
                         Rs=globals()["Mi"].Rs,
