@@ -1,6 +1,5 @@
 import socket
 import time
-import re
 from numpy import cos, random
 
 from settings.server import rSrv, ans
@@ -11,12 +10,11 @@ from scripts import (
     plot_fm_radar_results,
     save_fm_radar_results,
     get_relief,
-    get_sea,
     get_traekt,
-    calculate_relative_powers,
     show_relief,
     get_mixyz,
 )
+from tests import test_get_surface
 
 
 def server_run():
@@ -116,6 +114,8 @@ def server_run():
                     send_message("Ok. Get_Traekt called")
 
                 if "Get_Surface" in commands:
+                    test_get_surface()
+
                     send_message("Ok. Get_Surface called")
 
                 if "Do_Step" in commands:
