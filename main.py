@@ -1,26 +1,17 @@
 import socket
 import time
-from numpy import cos, random
 
 from settings.server import rSrv, ans
 from settings.init_variables import *
 from helpers import send_message, print_log, get_params
-from scripts import (
-    process_fm_radar,
-    plot_fm_radar_results,
-    save_fm_radar_results,
-    get_relief,
-    get_traekt,
-    show_relief,
-    get_mixyz,
-)
+from scripts import get_traekt, get_mixyz, do_sign_mod, calc_surface
 from tests import test_get_surface
 
 
 def server_run():
     print(f"UDP server running with port {rSrv.serverRecvPort}")
     rSrv.tStart = time.time()  # Время запуска программы
-    rSrv.serverinfo = socket.getaddrinfo(
+    rSrv.server_info = socket.getaddrinfo(
         "localhost", rSrv.serverRecvPort, socket.AF_UNSPEC, socket.SOCK_DGRAM
     )  # Информация о сервере
     rSrv.u = socket.socket(
@@ -78,10 +69,11 @@ def server_run():
                     print("Параметр", el)
                     exec(el, globals())
 
-                # Исполнение команд, print -dmeta можно не исполнять, так как в коде команд создаются изображения
+                # Установка констант
                 if "Set_Consts" in commands:
                     send_message("Ok. Consts set")
 
+                # Шаг: РЛС-МИ
                 if "Get_MiXyZ" in commands:
                     get_mixyz(
                         Nmax=globals()["Mi"].Nmax,
@@ -96,6 +88,7 @@ def server_run():
 
                     send_message("Ok. Get_MiXyZ called")
 
+                # Шаг: Траект. Цель
                 if "Get_Traekt" in commands:
                     get_traekt(
                         Nimp=int(globals()["Rs"].Nimp),
@@ -113,40 +106,44 @@ def server_run():
 
                     send_message("Ok. Get_Traekt called")
 
+                # Шаг: Фон
                 if "Get_Surface" in commands:
+                    # TODO поменять вызов функции не на тествую
                     test_get_surface()
+
+                    # calc_surface(
+                    #     {"Dspot": 50},
+                    #     {
+                    #         "Pos": globals()["Tr"].Pos,
+                    #         "Ang": globals()["Tr"].Ang,
+                    #         "N": 3,
+                    #     },
+                    #     {
+                    #         "Pos": globals()["St"].Pos,
+                    #         "N": int(globals()["St"].N),
+                    #     },
+                    #     {
+                    #         "Kr": [1, 1, 1, 1, 1, 1, 1, 1],
+                    #         "DOR": [10] * 8,
+                    #         "dH": 1,
+                    #         "Type": 4,  # Лес
+                    #         "test": {"Nadir": 0},
+                    #         "Ncr": 0,
+                    #     },
+                    #     result_path="surface.bmp",
+                    # )
 
                     send_message("Ok. Get_Surface called")
 
-                if "Do_Step" in commands:
-                    send_message("Ok. Do_Step called")
-
+                # Шаг: Предрасчет
                 if "Do_SignMod" in commands:
+                    do_sign_mod(globals())
+
                     send_message("Ok. Do_SignMod called")
 
-                if "Get_Relief" in commands:
-                    Sf, Relief = get_relief(globals())
-                    show_relief(Relief)
-
-                    send_message("Ok. Get_Relief called")
-
-                if "Do_SintFM" in commands:
-                    test_globals = {
-                        "dtau": 1e-6,
-                        "c": 3e8,
-                        "Wd": 1e6,
-                        "H": 1.0,
-                        "ChannelN": 3,
-                        "Nimp": 64,
-                        "Timp": 1e-2,
-                        "SigCN": random.rand(3, 100, 100),
-                        "SigSN": random.rand(3, 100, 100),
-                        "Rs": {"Rmin": 0.0, "Rmax": 1000, "Log": True, "GB": 20},
-                    }
-                    test_globals = process_fm_radar(test_globals)
-                    plot_fm_radar_results(test_globals)
-                    save_fm_radar_results(test_globals)
-                    send_message("Ok. Do_SintFM called")
+                # Шаг: ПНМ
+                if "Do_Step" in commands:
+                    send_message("Ok. Do_Step called")
 
             # Ждём следующей итерации
             except socket.timeout:

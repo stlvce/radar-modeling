@@ -9,7 +9,7 @@ class rSrv:
     serverRecvPort = 9098
     toIP = "localhost"
     toPort = 9092
-    serverinfo: list[tuple] | None = None
+    server_info: list[tuple] | None = None
     u: socket | None = None
     s: socket | None = None
     tStart = 0

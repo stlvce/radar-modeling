@@ -1,5 +1,9 @@
-from .do_sint_fm import process_fm_radar, plot_fm_radar_results, save_fm_radar_results
-from .do_sint_imp import (
+from archive.do_sint_fm import (
+    process_fm_radar,
+    plot_fm_radar_results,
+    save_fm_radar_results,
+)
+from archive.do_sint_imp import (
     process_radar_impulse,
     plot_radar_impulse_results,
     init_radar_impulse_processor_globals,
@@ -18,6 +22,7 @@ from .set_mi_param import calculate_relative_powers
 from .show_relief import show_relief
 from .get_mixyz import get_mixyz
 from .get_surface import calc_surface
+from .do_sign_mod import do_sign_mod
 
 __all__ = [
     "process_fm_radar",
@@ -38,4 +43,5 @@ __all__ = [
     "show_relief",
     "get_mixyz",
     "calc_surface",
+    "do_sign_mod",
 ]

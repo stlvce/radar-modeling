@@ -1,6 +1,11 @@
 from typing import Literal, List
 import numpy as np
 
+
+def evs(source: str):
+    eval(source)
+
+
 c = 3e8
 pi = 3.14
 g = 9.80665
@@ -151,6 +156,7 @@ class St:
     wh: int
     wz: int
     RSC: int
+    Pos = np.array([])
 
 
 class Tr:
@@ -163,6 +169,8 @@ class Tr:
     tang: str = "30"
     kren: str = "0"
     psi: str = "0"
+    Pos = np.array([])
+    Ang = None
 
 
 class Sf:
@@ -234,14 +242,9 @@ class Sea:
     rho: int
     WindV: int
     WaveL: int
-
     Shift: int
     depth: int
     nr: int
-
-
-def evs(source: str):
-    eval(source)
 
 
 def Relief():

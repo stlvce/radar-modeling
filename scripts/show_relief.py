@@ -67,8 +67,8 @@ def show_relief(Relief):
     plt.colorbar()
 
     # Пути к PNG и BMP в корне проекта
-    png_path = "resultFig1.png"
-    bmp_path = "resultFig1.bmp"
+    png_path = "relief.png"
+    bmp_path = "relief.bmp"
 
     # Сохраняем как PNG, потом конвертируем в BMP
     plt.savefig(png_path)

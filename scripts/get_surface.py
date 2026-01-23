@@ -128,16 +128,24 @@ def calc_surface(Sf, Tr, St, params, result_path=None):
     fig = plt.figure(figsize=(6, 6), dpi=100)
     ax: Axes3D = fig.add_subplot(111, projection="3d")
 
-    ax.plot3D(Tr["Pos"][:, 0], Tr["Pos"][:, 2], Tr["Pos"][:, 1], "-xm", label="Цель")
+    ax.plot3D(
+        Tr["Pos"][:, 0], Tr["Pos"][:, 2], Tr["Pos"][:, 1], "-xm", label="Траектория"
+    )
 
     if St["N"] > 0:
         for n in range(St["N"]):
-            ax.plot3D(
+            print(
                 St["Pos"][:, 0, n],
                 St["Pos"][:, 2, n],
                 St["Pos"][:, 1, n],
+                np.array([1, 1, 1]),
+            )
+            ax.plot3D(
+                St["Pos"][:, 0, n],
+                St["Pos"][:, 2, n],
+                [100, 100, 100],
                 "-dr",
-                label=f"Станция {n + 1}",
+                label=f"Локатор {n + 1}",
             )
 
     ax.scatter(
